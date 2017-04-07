@@ -1,0 +1,25 @@
+#/bin/bash
+
+# This script requires Python 3 or php5-cli
+# More reading:
+# https://docs.python.org/3/library/http.server.html
+# http://php.net/manual/en/features.commandline.webserver.php
+
+if [[ $1 = "help" ]]; then
+	echo "server [python|php] [port]"
+	echo "You can also just run server. By default, it would use Python 3's"
+	echo "http.server on port number 8000."
+
+	exit
+fi
+
+ENV="${1:python}"
+PORT="${2:-8000}"
+
+if [[ $ENV = python ]] || [[ $# -eq 0 ]]; then
+	python3 -m http.server "$PORT"
+fi
+
+if [[ $ENV = php ]]; then
+	php -S localhost:"$PORT"
+fi

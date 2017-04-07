@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# This script requires youtube-dl, Imagemagick, and ffmpeg
+# https://rg3.github.io/youtube-dl/
+# https://www.ffmpeg.org/
+# https://www.imagemagick.org/
+
+if [[ $# -eq 0 ]] ; then
+	echo 'Usage: youtubetogif [YOUTUBE_ID] [START_TIME] [SECONDS_FROM_START_TIME]'
+	exit 0
+fi
+
+YOUTUBE_ID=$1
+START_TIME=$2
+LENGTH=$3
+
+if [[ -f $YOUTUBE_ID.mp4 ]];
+then
+	echo "Use existing video."
+else
+	echo "Downloading Youtube video"
+	youtube-dl \
+	-f mp4 \
+	-o '%(id)s.%(ext)s' \
+	$YOUTUBE_ID
+fi
+
+echo "Get video dimensions"
+eval $(ffprobe -v error -of flat=s=_ -select_streams v:0 -show_entries stream=width,height $YOUTUBE_ID.mp4)
+SIZE=${streams_stream_0_width}x${streams_stream_0_height}
+
+echo "Converting with ffmpeg"
+ffmpeg \
+-ss $START_TIME \
+-i $YOUTUBE_ID.mp4 \
+-pix_fmt rgb24 \
+-r 100 \
+-s $SIZE \
+-t $LENGTH \
+$YOUTUBE_ID.gif
+
+#echo "Optimize with Imagemagick"
+#convert -layers Optimize $YOUTUBE_ID-unoptimized.gif $YOUTUBE_ID.gif
