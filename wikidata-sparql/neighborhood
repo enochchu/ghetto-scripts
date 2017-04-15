@@ -1,0 +1,12 @@
+SELECT DISTINCT ?placeLabel ?place ?coor ?range
+WHERE
+{
+	    ?place wdt:P31 wd:Q123705 ;
+		?range wd:Q65;
+		wdt:P625 ?coor.
+
+		SERVICE wikibase:label { bd:serviceParam wikibase:language "en"  }
+
+}
+
+ORDER BY ?placeLabel
